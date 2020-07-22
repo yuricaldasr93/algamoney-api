@@ -16,34 +16,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.algamoney.api.model.Categoria;
-import com.example.algamoney.api.repository.CategoriaRepository;
+import com.example.algamoney.api.model.Pessoa;
+import com.example.algamoney.api.repository.PessoaRepository;
 
 @RestController
-@RequestMapping("/categorias")
-public class CategoriaResource {
+@RequestMapping("/pessoas")
+public class PessoaResource {
 
 	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private PessoaRepository pessoarepository;
 	
 	@GetMapping
-	public List<Categoria> listar(){
-		 return categoriaRepository.findAll();
+	public List<Pessoa> listar(){
+		return pessoarepository.findAll();
 	}
 	
 	@PostMapping
-	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
-		Categoria categoriaSalva = categoriaRepository.save(categoria);
+	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response){
+		Pessoa pessoaSalva = pessoarepository.save(pessoa);
+		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-		.buildAndExpand(categoriaSalva.getCodigo()).toUri();
+		.buildAndExpand(pessoaSalva.getCodigo()).toUri();
+		
 		response.setHeader("Location", uri.toASCIIString());
 		
-		return ResponseEntity.created(uri).body(categoriaSalva);
+		return ResponseEntity.created(uri).body(pessoaSalva);
 	}
 	
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable Integer codigo) {
-		Categoria categoria = categoriaRepository.findById(codigo).orElse(null);
-		return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
+	public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable Integer codigo){
+		return pessoarepository.findById(codigo).map(m -> ResponseEntity.ok(m))
+				.orElse(ResponseEntity.notFound().build());
 	}
 }
