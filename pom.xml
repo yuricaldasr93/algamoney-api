@@ -59,6 +59,11 @@
 		    <version>3.10</version>
 		</dependency>
 		
+		<!-- JPA metamodel -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
