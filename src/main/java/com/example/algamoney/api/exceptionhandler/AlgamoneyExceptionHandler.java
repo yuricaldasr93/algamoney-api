@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,9 +33,9 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		String mensagemUsuraio = messageSource.getMessage("requisicao.invalida", null, LocaleContextHolder.getLocale());
-		String mensagemDesenvolvedor = Optional.ofNullable(ex.getCause()).orElse(ex).toString();
-		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuraio, mensagemDesenvolvedor));
+		String mensagemUsuario = messageSource.getMessage("requisicao.invalida", null, LocaleContextHolder.getLocale());
+		String mensagemDesenvolvedor = getCauseOrException(ex);
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
 		return handleExceptionInternal(ex, erros, headers, status, request);
 	}
 	
@@ -50,9 +51,9 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex,
 			WebRequest request){
 		
-		String mensagemUsuraio = messageSource.getMessage("recurso.inexistente", null, LocaleContextHolder.getLocale());
+		String mensagemUsuario = messageSource.getMessage("recurso.inexistente", null, LocaleContextHolder.getLocale());
 		String mensagemDesenvolvedor = ex.toString();
-		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuraio, mensagemDesenvolvedor));
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 		
 	}
@@ -60,10 +61,14 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({DataIntegrityViolationException.class})
 	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, 
 			WebRequest request){
-		String mensagemUsuraio = messageSource.getMessage("recurso.operacao-nao-permitida", null, LocaleContextHolder.getLocale());
+		String mensagemUsuario = messageSource.getMessage("recurso.operacao-nao-permitida", null, LocaleContextHolder.getLocale());
 		String mensagemDesenvolvedor = ExceptionUtils.getRootCauseMessage(ex);
-		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuraio, mensagemDesenvolvedor));
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
+	private String getCauseOrException(Exception ex) {
+		return Optional.ofNullable(ex.getCause()).orElse(ex).toString();
 	}
 	
 	private List<Erro> criarListaDeErros(BindingResult bindingResult){

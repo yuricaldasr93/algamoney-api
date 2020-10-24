@@ -25,12 +25,19 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
-		.withClient("angular")//-> Identificação do cliente
-		.secret("$2a$10$bhBy4S/E5pxUoeHHLFGQ1O/SdNdV.6Bc.5qK8BxlHoCg9tzrCggDK")//-> senha
-		.scopes("read", "write")//-> o que o cliente pode fazer
-		.authorizedGrantTypes("password", "refresh_token") //->  Utilizando o granType Password flow e refresh token
-		.accessTokenValiditySeconds(20) //-> Quanto tempo o token será válido
-		.refreshTokenValiditySeconds(3600 * 24);
+			.withClient("angular")//-> Identificação do cliente
+			.secret("$2a$10$bhBy4S/E5pxUoeHHLFGQ1O/SdNdV.6Bc.5qK8BxlHoCg9tzrCggDK")//-> senha
+			.scopes("read", "write")//-> o que o cliente pode fazer
+			.authorizedGrantTypes("password", "refresh_token") //->  Utilizando o granType Password flow e refresh token
+			.accessTokenValiditySeconds(1800) //-> Quanto tempo o token será válido
+			.refreshTokenValiditySeconds(3600 * 24)
+		.and()
+			.withClient("mobile")//-> Identificação do cliente
+			.secret("$2a$10$Txyy8Cb2Foxc2g.O9EJ6GOg/pyJRafNNRWJ9BWHNQbijLpPpoK5Zy")//-> senha
+			.scopes("read")//-> o que o cliente pode fazer(escopo do cliente)
+			.authorizedGrantTypes("password", "refresh_token") //->  Utilizando o granType Password flow e refresh token
+			.accessTokenValiditySeconds(1800) //-> Quanto tempo o token será válido
+			.refreshTokenValiditySeconds(3600 * 24);
 	}
 	
 	@Override
